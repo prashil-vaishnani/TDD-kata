@@ -34,4 +34,14 @@ describe("String Calculator - Add", () => {
   it("should handle a larger set of numbers", () => {
     expect(Add("10,20,30,40")).toBe(100);
   });
+  // Test for a numbers with a newline
+  it('should handle new lines between numbers as delimiters', () => {
+    const numbers = "1\n2,3";
+    const result = Add(numbers);
+    expect(result).toBe(6);
+  });
+
+  it('should handle only new line delimiters', () => {
+    expect(Add("1\n2\n3")).toBe(6);
+  });
 });
