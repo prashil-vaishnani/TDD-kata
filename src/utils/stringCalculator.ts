@@ -1,36 +1,54 @@
 // src/utils/stringCalculator.ts
+
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function Add(numbers: string): number {
   if (numbers === "") {
     return 0;
   }
 
   let numbersToParse = numbers;
-  let splitPattern: RegExp;
+  const delimiters: string[] = [",", "\n"];
 
   if (numbers.startsWith("//")) {
-    const delimiterMatch = numbers.match(/^\/\/(.+)\n/);
-    if (delimiterMatch && delimiterMatch[1]) {
-      const customDelim = delimiterMatch[1].replace(
-        /[.*+?^${}()|[\]\\]/g,
-        "\\$&"
-      );
-      splitPattern = new RegExp(`[${customDelim},\\n]`);
-      numbersToParse = numbers.substring(delimiterMatch[0].length);
-    } else {
-      splitPattern = /[,|\n]/;
+    const headerMatch = numbers.match(/^\/\/(.*)\n/);
+
+    if (headerMatch && headerMatch[1]) {
+      const headerPart = headerMatch[1]; 
+      const bracketDelimiters = headerPart.match(/\[(.*?)\]/g);
+
+      if (bracketDelimiters) {
+        bracketDelimiters.forEach((bracketedDelim) => {
+          const actualDelim = bracketedDelim.substring(
+            1,
+            bracketedDelim.length - 1
+          );
+          delimiters.push(actualDelim);
+        });
+      } else {
+        delimiters.push(headerPart);
+      }
+
+      numbersToParse = numbers.substring(headerMatch[0].length);
     }
-  } else {
-    splitPattern = /[,|\n]/;
   }
+  const escapedDelimiters = delimiters
+    .sort((a, b) => b.length - a.length)
+    .map(escapeRegExp)
+    .join("|"); 
+  const splitPattern = new RegExp(escapedDelimiters);
 
-  const nums = numbersToParse
+  const parsedNumbers = numbersToParse
     .split(splitPattern)
-    .map((numStr) => parseInt(numStr, 10));
+    .filter((s) => s !== "") 
+    .map((numStr) => parseInt(numStr, 10)); 
 
-  const negativeNumbers = nums.filter((num) => num < 0);
-
+  const negativeNumbers = parsedNumbers.filter((num) => num < 0);
   if (negativeNumbers.length > 0) {
     throw new Error(`negatives not allowed: ${negativeNumbers.join(",")}`);
   }
-  return nums.reduce((acc, current) => acc + current, 0);
+
+  return parsedNumbers.reduce((acc, current) => acc + current, 0);
 }
