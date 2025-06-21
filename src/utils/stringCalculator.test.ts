@@ -19,4 +19,9 @@ describe("String Calculator - Add", () => {
     const result = Add(numbers);
     expect(result).toBe(5);
   });
+  // Test for two comma-separated numbers
+  it("should return the sum of two comma-separated numbers", () => {
+    expect(Add("1,9")).toBe(10);
+    expect(Add("5,7")).toBe(12);
+  });
 });
