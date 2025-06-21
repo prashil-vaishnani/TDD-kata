@@ -58,4 +58,18 @@ describe("String Calculator - Add", () => {
   it("should still support default delimiters (comma and newline) even with custom delimiter prefix", () => {
     expect(Add("//;\n1;2,3\n4")).toBe(10);
   });
+  // Test for a negative number
+   it('should throw an exception for a single negative number', () => {
+    const numbers = "1,-2";
+    expect(() => Add(numbers)).toThrow("negatives not allowed: -2");
+  });
+
+  it('should throw an exception with all negative numbers if multiple are present', () => {
+    const numbers = "1,-2,3,-4,5,-6";
+    expect(() => Add(numbers)).toThrow("negatives not allowed: -2,-4,-6");
+  });
+
+  it('should throw an exception for only negative numbers', () => {
+    expect(() => Add("-1,-5")).toThrow("negatives not allowed: -1,-5");
+  });
 });
