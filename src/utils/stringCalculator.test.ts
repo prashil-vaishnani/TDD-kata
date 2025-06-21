@@ -35,13 +35,27 @@ describe("String Calculator - Add", () => {
     expect(Add("10,20,30,40")).toBe(100);
   });
   // Test for a numbers with a newline
-  it('should handle new lines between numbers as delimiters', () => {
+  it("should handle new lines between numbers as delimiters", () => {
     const numbers = "1\n2,3";
     const result = Add(numbers);
     expect(result).toBe(6);
   });
 
-  it('should handle only new line delimiters', () => {
+  it("should handle only new line delimiters", () => {
     expect(Add("1\n2\n3")).toBe(6);
+  });
+  // Test for a mix of commas and new lines
+  it("should support custom single character delimiter", () => {
+    const numbers = "//;\n1;2";
+    const result = Add(numbers);
+    expect(result).toBe(3);
+  });
+
+  it("should support another custom single character delimiter", () => {
+    expect(Add("//|\n1|2|3")).toBe(6);
+  });
+
+  it("should still support default delimiters (comma and newline) even with custom delimiter prefix", () => {
+    expect(Add("//;\n1;2,3\n4")).toBe(10);
   });
 });
